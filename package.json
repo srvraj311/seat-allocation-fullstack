@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node app.js",
+    "start": "nodemon app.js",
     "build": "cd client && npm run build",
     "heroku-postbuild" : "npm run install-client && npm run build",
     "install-client": "cd client && npm install"
@@ -15,5 +15,8 @@
     "express": "~4.16.1",
     "mongoose": "^6.3.0",
     "morgan": "~1.9.1"
+  },
+  "engines": {
+    "node": "16.x"
   }
 }

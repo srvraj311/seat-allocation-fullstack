@@ -30,15 +30,20 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.get("/", (req, res) => {
-  res.send("Express Server Working");
-});
+
 app.use("/trains", trainRouters);
 app.use("/coach", coachRouter);
 app.use("/booking", bookingRouter);
 
 if(process.env.NODE_ENV === 'production'){
-    app.use(express.static('/Client/dist'))
+    app.use(express.static(path.join(__dirname , '/Client/dist')))
+    app.get("*" , (req , res, next)=> {
+        res.sendFile(path.resolve(__dirname, 'Client', 'dist', 'index.html'));
+    })
+}else{
+    app.get("/", (req, res) => {
+        res.send("Express Server Working");
+    });
 }
 app.listen(port, (x) => {
   console.log("Server Listening on :" + port);
