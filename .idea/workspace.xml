@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="2488a0ad-6af8-4c27-b829-8c49f1c8efe3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/Client/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Client/src/app/data.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/Client/src/app/data.service.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,7 +46,7 @@
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_interpreter_path": "node",
     "nodejs_package_manager_path": "npm",
-    "ts.external.directory.path": "/Users/srvraj311/IdeaProjects/seat-allocation-backend/Client/node_modules/typescript/lib"
+    "ts.external.directory.path": "/Applications/IntelliJ IDEA.app/Contents/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -84,7 +82,8 @@
       <workItem from="1650371897429" duration="7810000" />
       <workItem from="1650389840608" duration="2188000" />
       <workItem from="1650392182638" duration="983000" />
-      <workItem from="1650439706100" duration="4286000" />
+      <workItem from="1650439706100" duration="4347000" />
+      <workItem from="1650445219801" duration="81000" />
     </task>
     <servers />
   </component>

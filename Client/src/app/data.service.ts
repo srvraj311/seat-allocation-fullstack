@@ -49,11 +49,11 @@ export class DataService {
   }
 
   getTrains():Observable<Train[]>{
-    const url = `${this._url}/trains`
+    const url = `/trains`
     return this.http.get<Train[]>(url)
   }
   getCoaches(train_no:number):Observable<Coach[]>{
-    const url = `${this._url}/coach/${train_no}`;
+    const url = `/coach/${train_no}`;
     return this.http.get<Coach[]>(url);
   }
 
