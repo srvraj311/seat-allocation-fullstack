@@ -1,0 +1,69 @@
+<h3 class="title">🎫 Book Tickets!</h3>
+<div *ngIf="selectedCoach">
+
+
+  <p class="text available cardify">
+    Available Tickets :
+    <span [ngClass]="{ red: isAvailable() }">{{ availableSeats }}</span>
+  </p>
+  <div *ngIf="bookedSeat.length > 0" class="cardify booked">
+    <p class="text avaialble">Congratulations! These seats are booked for you</p>
+    <app-seat-item [seatArr]="bookedSeat"></app-seat-item>
+  </div>
+
+  <ng-form class="container cardify" (keyup.enter)="book()">
+    <label for="noOfSeats"> No. of Seats <span>( Between 1 - 7 ) </span></label>
+    <input
+      type="number"
+      name="noOfSeats"
+      class="seat"
+      maxlength="1"
+      min="1"
+      max="7"
+
+      contenteditable="false"
+      [(ngModel)]="noOfSeats"
+    />
+    <!--  Autofocus here above-->
+    <input type="submit" class="btn btn-submit" value="Book" (click)="book()"/>
+  </ng-form>
+  <app-seat-item></app-seat-item>
+  <div class="optional">
+    <input
+      name="random"
+      type="button"
+      class="btn btn-gen"
+      (click)="generateRandom()"
+      value="Fill Coach With Random Bookings"
+    />
+    <input
+      type="button"
+      class="btn btn-submit"
+      (click)="clearSeats()"
+      value="Reset Coach"
+    />
+  </div>
+  <p class="text" style="text-align: center; margin: 15px; font-size: 0.7rem">
+    Time taken for algorithm and displaying on screen :
+    <span style="color: green">{{ timeTakenToBook }}ms</span>
+  </p>
+</div>
+<div class="train-selector cardify">
+  <div class="r">
+    <label class="">Train Number :</label>
+    <div class="train">
+      <button *ngFor="let train of trainArr" class="btn box"
+              [ngClass]="(train.train_no == selectedTrain) ? 'selected' : ''"
+              (click)="selectTrain(train.train_no)">{{train.train_no}}</button>
+    </div>
+  </div>
+  <div class="r">
+    <label class="">Coach Number : </label>
+    <div class="coach">
+      <button *ngFor="let coach of coachArr" class="btn box"
+              [ngClass]="(coach.coach_id == selectedCoach) ? 'selected' : ''" (click)="selectCoach(coach.coach_id)">
+        C{{coach.coach_id}}</button>
+    </div>
+  </div>
+
+</div>

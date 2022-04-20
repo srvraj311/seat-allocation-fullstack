@@ -1,0 +1,44 @@
+/***
+ * Created by Srvraj311 (Sourabh)
+ * sourabhraj311@gmail.com
+ *
+ * Styling contains responsive implementation for both containers present in root component
+ */
+
+.navbar {
+  background-color: var(--primary) !important;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: auto;
+}
+.navbar-subtext {
+  color: white;
+}
+.primary-container {
+  display: grid;
+  grid-auto-columns: minmax(0, 2fr);
+  grid-auto-flow: column;
+  height: 100%;
+  align-items: center;
+}
+.input-container {
+  position: relative;
+  top: 0;
+  height: 100%;
+  padding: 0 10px;
+  max-width: 700px;
+}
+app-seat {
+  height: 100%;
+}
+
+@media screen and (max-width: 600px) {
+  .primary-container {
+    display: flex;
+    flex-direction: column;
+  }
+  app-seat {
+    min-height: 780px;
+  }
+}

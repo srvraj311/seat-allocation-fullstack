@@ -1,0 +1,19 @@
+<!--
+
+/***
+ * Created by Srvraj311 (Sourabh)
+ * sourabhraj311@gmail.com
+ *
+ * HTML for This component contains an ngFor directive that loops over the Matrix of seats fetched from booking service
+ * And then renders to seat-item components
+ */
+
+ -->
+
+<div class="seat-container">
+  <div class="seats" >
+    <p class="empty" *ngIf="mat.length === 0">🚊Select Train and Coach</p>
+    <app-seat-item *ngFor="let row of mat" [seatArr]="row"></app-seat-item>
+  </div>
+
+</div>

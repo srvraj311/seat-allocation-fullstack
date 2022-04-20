@@ -1,0 +1,36 @@
+/***
+ * Created by Srvraj311 (Sourabh)
+ * sourabhraj311@gmail.com
+ *
+ * The styling contains of a background that looks like train's coach, which has a fixed heigh and width
+ * The box will contain seat-item components
+ */
+
+.seat-container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+}
+.seats {
+  display: flex;
+  flex-direction: column;
+  margin: 2rem 0;
+  padding-bottom: 10px;
+  border: 1px solid rgb(202, 202, 202);
+  background-color: rgb(255, 255, 255);
+  border-radius: 10px;
+  height: 100%;
+  width: 100%;
+  min-height: 680px;
+  max-width: 350px;
+  min-width: 250px;
+  overflow-y: auto;
+}
+
+.empty{
+  align-self: center;
+  margin-top: 84%;
+}

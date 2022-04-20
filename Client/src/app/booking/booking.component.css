@@ -1,0 +1,127 @@
+/***
+ * Created by Srvraj311 (Sourabh)
+ * sourabhraj311@gmail.com
+ *
+ * All the user input related stylings are done here
+ *
+ */
+
+.title {
+  display: block;
+  text-align: center;
+  margin: 0.8rem;
+}
+.text {
+  text-align: left;
+}
+.cardify {
+  display: block;
+  padding: 0.8rem 1.3rem;
+  width: 100%;
+  background-color: #ffffff;
+  border: 1px solid #ededed;
+  color: black;
+  border-radius: 1.5rem;
+}
+
+.text.available {
+  color: black;
+}
+.text.available span {
+  float: right;
+  color: green;
+}
+.red {
+  color: red !important;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+}
+.container input[type="number"] {
+  outline: 1px solid #ededed;
+  border-radius: 1.5rem;
+  border: none;
+  padding: 0.34rem 1rem;
+  margin-top: 1rem;
+}
+
+label span {
+  font-size: small;
+}
+
+.btn {
+  width: 140px;
+  height: 45px;
+  font-family: "Roboto", sans-serif;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  font-weight: 500;
+  color: #000;
+  background-color: #fff;
+  border: 1px solid lightgray;
+  border-radius: 45px;
+  /*box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);*/
+  transition: all 0.3s ease 0s;
+  cursor: pointer;
+  outline: none;
+}
+.btn:hover {
+  background-color: var(--primary-2);
+  box-shadow: 0px 8px 20px rgba(46, 131, 229, 0.4);
+  color: #fff;
+}
+
+.btn-submit {
+  place-self: center;
+  margin-top: 1.5rem;
+}
+.optional {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.btn-gen {
+
+  margin-top: 3rem;
+  padding: 0 12px;
+  width: fit-content;
+}
+
+.booked {
+  margin-bottom: 1rem;
+}
+
+.train{
+  display: flex;
+  flex-direction: row;
+}
+.coach{
+  width: auto;
+  display: flex;
+  flex-direction: row;
+}
+.box{
+  width: auto;
+  height: 30px;
+  min-width: 60px;
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  margin: 5px 10px;
+}
+
+.selected{
+  background: var(--primary);
+  color: white;
+}
+
+.train-selector{
+  display: flex;
+  flex-direction: column;
+}
+
+.r{
+  display: flex;
+  align-items: center;
+}

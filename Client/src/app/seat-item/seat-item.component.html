@@ -1,0 +1,20 @@
+<!-- 
+  /***
+ * Created by Srvraj311 (Sourabh)
+ * sourabhraj311@gmail.com
+ * 
+ * This is HTML component for seat-items , that displays cells as seats upn looping of the 
+ * array provide by the parent, 
+ * Also it checks the booking status of the seat and alters class accordingly
+ * 
+ */
+ -->
+<div class="horizontal-flex mx-1">
+  <div
+    *ngFor="let seat of seatArr"
+    [ngClass]="seat.booked ? 'red' : 'white'"
+    class="seat-square"
+  >
+    {{ seat.id }}
+  </div>
+</div>
