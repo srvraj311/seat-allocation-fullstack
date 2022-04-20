@@ -36,14 +36,14 @@ app.use("/coach", coachRouter);
 app.use("/booking", bookingRouter);
 
 if(process.env.NODE_ENV === 'production'){
-    app.use(express.static(path.join(__dirname , '/Client/dist')))
+    app.use(express.static(path.join(__dirname , '/Client/dist/seat_allocation_d2c')))
     app.get("*" , (req , res, next)=> {
-        res.sendFile(path.resolve(__dirname, 'Client', 'dist', 'index.html'));
+        res.sendFile(path.resolve(__dirname, 'Client/dist/seat_allocation_d2c/index.html'));
     })
 }else{
-    app.get("/", (req, res) => {
-        res.send("Express Server Working");
-    });
+    app.get('/' , (req, res, next) => {
+        res.send("Express Server running");
+    })
 }
 app.listen(port, (x) => {
   console.log("Server Listening on :" + port);
