@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "start": "nodemon app.js",
-    "build": "cd client && npm run build",
+    "build": "cd Client && npm run build",
     "heroku-postbuild" : "npm run install-client && npm run build",
-    "install-client": "cd client && npm install"
+    "install-client": "cd Client && npm install"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
