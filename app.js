@@ -38,7 +38,7 @@ app.use("/coach", coachRouter);
 app.use("/booking", bookingRouter);
 
 if(process.env.NODE_ENV === 'production'){
-    app.use(express.static('/client/dist'))
+    app.use(express.static('/Client/dist'))
 }
 app.listen(port, (x) => {
   console.log("Server Listening on :" + port);
