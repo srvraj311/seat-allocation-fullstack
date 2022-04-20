@@ -26,8 +26,6 @@
 • You can take appropriate assumptions, if any, and state them on top of the submission sheet.
 • Write a good functional and optimum code.
 • Try to use less variables.
-• Please write comments so that evaluator can clearly understand your code.
-• In case of any queries, feel free to contact at yashita@dare2compete.com
 
 ## My Solution :
 I have used dynamic programming approach to store the state 
