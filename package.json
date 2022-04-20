@@ -5,7 +5,7 @@
   "scripts": {
     "start": "nodemon app.js",
     "build": "cd Client && npm run build",
-    "heroku-postbuild" : "npm run install-client && npm run build",
+    "heroku-postbuild" : "npm run install-client && num install -g @angular/cli && npm run build",
     "install-client": "cd Client && npm install"
   },
   "dependencies": {
