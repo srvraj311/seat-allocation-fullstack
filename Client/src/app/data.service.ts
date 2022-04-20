@@ -20,7 +20,7 @@ import {number} from "mathjs";
  * Two methods to update the matrix and booked seats so that all receiving components will update in realtime
  */
 export class DataService {
-  private _url: string = "http://localhost:3000"
+  private _url: string = ""
   constructor(private http : HttpClient) {
   }
   private coach!:Coach;
