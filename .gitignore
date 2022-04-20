@@ -1,3 +1,6 @@
 node_modules
-client/node_modules
-.env
+Client/node_modules
+Client/.angular
+Client/dist
+/.env
+/.idea
