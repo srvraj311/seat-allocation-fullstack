@@ -36,7 +36,6 @@ export class BookingService {
         this.dataService.changeMat(this.dataService.convertBinaryToMatrix(res.coach.bookingState))
         this.dataService.updateBookedSeat(res.bookedSeat);
         this.dataService.updateAvailableSeats(res.coach.availableSeats);
-
       })
       return;
     }

@@ -1,9 +1,8 @@
 const express = require("express");
 const path = require("path");
-const cookieParser = require("cookie-parser");
-const logger = require("morgan");
-const mongoose = require("mongoose");
-const cors = require("cors");
+const logger = require("morgan"); // For logging requests
+const mongoose = require("mongoose"); // For connecting to mongodb
+const cors = require("cors"); // For cross-origin policy
 
 const port = process.env.PORT || 5000;
 
@@ -29,7 +28,6 @@ app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 
 app.use("/trains", trainRouters);
 app.use("/coach", coachRouter);
@@ -46,7 +44,7 @@ if (process.env.NODE_ENV === "production") {
   });
 } else {
   // app.get('/' , (req, res, next) => {
-  //     res.send("Express Server running");
+  //     res.send("Express Server running in development mode");
   // })
   app.use(
     express.static(path.join(__dirname, "/Client/dist/seat_allocation_d2c"))

@@ -62,7 +62,7 @@ class BookingService {
     }
 
     bookIfAvailableAdjacent(count) {
-        let rowExact = -1;
+        let rowExact = new Map;
         let rowGreaterThan = [];
         let rowSumGreaterThan = [];
 
@@ -86,10 +86,14 @@ class BookingService {
             // @ts-ignore
             for (let elem of this.rowMap.get(i)) {
                 // case 1
+
                 if (elem === count) {
-                    rowExact = i;
-                    console.log(' CASE 1 ');
-                    return this.performBookingAdjacentSeats(rowExact, count, 0);
+                    let s = 0;
+                    for(let j =  0; j < this.rowMap.get(i).length; j++){
+                        s += this.rowMap.get(i)[j];
+                    }
+                    rowExact.set(i , s);
+                    break;
                 }
                 // case 2
                 if (elem > count) {
@@ -112,9 +116,29 @@ class BookingService {
             }
             // Find all rows having empty seats greater than n;
         }
+        if(rowExact.size > 0){
+            let min = 99999;
+            let r = 0;
+            console.log(rowExact);
+            rowExact.forEach((value, key) => {
+                if(value < min){
+                    min = value;
+                    r = key
+                }
+            })
+            return this.performBookingAdjacentSeats(r, count, 0);
+        }
         if (rowGreaterThan.length > 0) {
+            let min = 99999;
+            let r = 0;
+            for(let i = 0; i < rowGreaterThan.length; i++){
+                if(rowGreaterThan[i] < min){
+                    min = rowGreaterThan[i];
+                    r = i;
+                }
+            }
             console.log(' CASE 2 ');
-            return this.performBookingAdjacentSeats(rowMaxAt, count, maxAdjacentSection)
+            return this.performBookingAdjacentSeats(r, count, maxAdjacentSection)
         }
         if (rowSumGreaterThan.length > 0) {
             console.log(' CASE 3 ');
