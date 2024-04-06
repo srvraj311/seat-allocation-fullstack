@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000;
 const app = express();
 
 //const connectionUrl = `mongodb://localhost:27017/d2c`
-const connectionUrl = `mongodb+srv://srvraj311:6a6yQ6qr5Vv4a6Fa@enwrite.2m74x.mongodb.net/hospital-management?authSource=admin&replicaSet=atlas-14g4b2-shard-0&w=majority&readPreference=primary&retryWrites=true&ssl=true`;
+const connectionUrl =process.env.MONGO_URI;
 
 
 handleWrongParams = (res, ...args) => {
