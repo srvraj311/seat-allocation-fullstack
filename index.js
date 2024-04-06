@@ -6,9 +6,10 @@ const cors = require("cors"); // For cross-origin policy
 
 const port = process.env.PORT || 3000;
 const app = express();
-
+// use dotenv
+require('dotenv').config();
 //const connectionUrl = `mongodb://localhost:27017/d2c`
-const connectionUrl =process.env.MONGO_URI;
+const connectionUrl = process.env.MONGO_URI;
 
 
 handleWrongParams = (res, ...args) => {
