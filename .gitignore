@@ -1,6 +1,6 @@
 node_modules
 Client/node_modules
 Client/.angular
-Client/dist
+# Client/dist
 /.env
 /.idea

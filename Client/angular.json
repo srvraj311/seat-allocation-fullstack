@@ -106,5 +106,8 @@
       }
     }
   },
-  "defaultProject": "seat_allocation_d2c"
+  "defaultProject": "seat_allocation_d2c",
+  "cli": {
+    "analytics": false
+  }
 }

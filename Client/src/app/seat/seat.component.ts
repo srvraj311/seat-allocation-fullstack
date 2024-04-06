@@ -1,10 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {zeros} from 'mathjs';
-import {BookingService} from '../booking.service';
 import {DataService} from '../data.service';
 import Seat from '../Seat';
-import Train from '../Train'
-import Coach from '../Coach'
 
 /***
  * Created by Srvraj311 (Sourabh)
