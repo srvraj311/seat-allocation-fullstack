@@ -1,5 +1,5 @@
 ## Seat Allocation System - MEAN Stack
-# [View Working Demo Here](https://seat-allocation-system.herokuapp.com/)
+# [View Working Demo Here](https://seat-allocation-fullstack.vercel.app/)
 
 ### Problem Description:
 1. There are n seats in a coach of a train with only r seats in a row.
