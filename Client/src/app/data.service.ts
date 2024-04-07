@@ -29,6 +29,16 @@ export class DataService {
   getMat = this.mat.asObservable();
   getBookedSeat = this.bookedSeat.asObservable();
   getAvailableSeat = this.availableSeats.asObservable();
+  spinnerVisible = new BehaviorSubject<boolean>(true);
+  
+
+  setSpinnerVisible(b:boolean){
+    this.spinnerVisible.next(b);
+  }
+
+  getSpinnerVisible(){
+    return this.spinnerVisible.asObservable();
+  }
 
 
   changeMat(mat: Seat[][]) {
@@ -48,11 +58,11 @@ export class DataService {
   }
 
   getTrains():Observable<Train[]>{
-    const url = `/trains`
+    const url = `${this._url}/trains`
     return this.http.get<Train[]>(url)
   }
   getCoaches(train_no:number):Observable<Coach[]>{
-    const url = `/coach/${train_no}`;
+    const url = `${this._url}/coach/${train_no}`;
     return this.http.get<Coach[]>(url);
   }
 

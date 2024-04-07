@@ -13,7 +13,11 @@
     Create a seat allocation system, that assisgns nearest seats to passenger
   </p>
 </div>
+<div class="spinner-container" *ngIf="spinnerVisible">
+  <mat-spinner #spinner mode="indeterminate" class="spinner" ></mat-spinner>
+</div>
 <div class="primary-container my-3">
   <app-seat></app-seat>
   <app-booking class="input-container"></app-booking>
 </div>
+

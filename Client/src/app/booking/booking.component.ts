@@ -1,9 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {BookingService} from '../booking.service';
 import {DataService} from '../data.service';
 import Seat from '../Seat';
 import Train from "../Train";
 import Coach from "../Coach";
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 /***
  * Created by Srvraj311 (Sourabh)
@@ -28,18 +29,19 @@ export class BookingComponent implements OnInit {
   selectedTrain!: number;
   coachArr!: Coach[];
   selectedCoach!: number;
-
+  
   // Injecting Booking Service : Responsible for booking
   // DataService : Responsible for live changes to be updated on screen
   constructor(
     private bookingService: BookingService,
     private dataService: DataService,
   ) {
-    this.dataService.getTrains().subscribe((trains) => this.trainArr = trains)
-    this.dataService.getAvailableSeat.subscribe((a) => this.availableSeats = a);
   }
 
   ngOnInit(): void {
+    this.dataService.setSpinnerVisible(true);
+    this.dataService.getTrains().subscribe((trains) => { this.trainArr = trains; this.dataService.setSpinnerVisible(false); });
+    this.dataService.getAvailableSeat.subscribe((a) => { this.availableSeats = a; this.dataService.setSpinnerVisible(false); });
   }
 
   isAvailable() {
@@ -53,6 +55,7 @@ export class BookingComponent implements OnInit {
 
   // perform Booking operation with user input value.
   book() {
+    this.dataService.setSpinnerVisible(true);
     const start = performance.now(); // For time calculation of algorithm
     let end;
     if (this.noOfSeats <= 7 && this.noOfSeats >= 1) {
@@ -60,6 +63,7 @@ export class BookingComponent implements OnInit {
       end = performance.now(); // For time calculation of algorithm
       this.dataService.getBookedSeat.subscribe((newBookedSeats) => {
         this.bookedSeat = newBookedSeats;
+        this.dataService.setSpinnerVisible(false);
       });
       const timeTaken = end - start;
       this.timeTakenToBook = (Math.round(timeTaken * 10000) / 10000).toFixed(4);

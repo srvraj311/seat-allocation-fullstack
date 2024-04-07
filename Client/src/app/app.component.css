@@ -42,3 +42,18 @@ app-seat {
     min-height: 780px;
   }
 }
+.spinner-container {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  width: 100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 999;
+  pointer-events: none !important;
+}
