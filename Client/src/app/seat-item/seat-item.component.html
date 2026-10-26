@@ -1,20 +1,34 @@
-<!-- 
-  /***
- * Created by Srvraj311 (Sourabh)
- * sourabhraj311@gmail.com
- * 
- * This is HTML component for seat-items , that displays cells as seats upn looping of the 
- * array provide by the parent, 
- * Also it checks the booking status of the seat and alters class accordingly
- * 
- */
- -->
-<div class="horizontal-flex mx-1">
-  <div
-    *ngFor="let seat of seatArr"
-    [ngClass]="seat.booked ? 'red' : 'white'"
-    class="seat-square"
-  >
-    {{ seat.id }}
+<!--
+  Created by Srvraj311 (Sourabh)
+  sourabhraj311@gmail.com
+
+  One row of seats. Loops over the array provided by the parent and styles each seat
+  by its booking state.
+-->
+<div class="row" role="row">
+  <span class="row-label" *ngIf="rowLabel !== null" aria-hidden="true">{{ rowLabel }}</span>
+  <div class="seats" [style.--cols]="cols || seatArr.length" [style.--size.px]="size">
+    <div
+      *ngFor="let seat of seatArr; trackBy: trackSeat; let i = index"
+      class="seat"
+      [class.booked]="seat.booked && !isMine(seat)"
+      [class.mine]="isMine(seat)"
+      [class.preview]="preview.has(seat.number) && !seat.booked"
+      [class.hot]="hot"
+      [style.--d.ms]="i * 70"
+      role="img"
+      [attr.data-seat]="seat.number"
+      [attr.aria-label]="label(seat)"
+    >
+      <svg viewBox="0 0 40 44" aria-hidden="true">
+        <rect class="ext" x="6.5" y="5" width="27" height="25" rx="8" />
+        <rect class="ext" x="6.5" y="31" width="27" height="12" rx="5" />
+        <rect class="arm" x="1.5" y="17" width="7" height="19" rx="3.5" />
+        <rect class="arm" x="31.5" y="17" width="7" height="19" rx="3.5" />
+        <rect class="back" x="6.5" y="2" width="27" height="25" rx="8" />
+        <rect class="base" x="6.5" y="28" width="27" height="12" rx="5" />
+        <text x="20" y="19.5" text-anchor="middle">{{ seat.number }}</text>
+      </svg>
+    </div>
   </div>
 </div>

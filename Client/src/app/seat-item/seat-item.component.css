@@ -1,51 +1,129 @@
 /***
  * Created by Srvraj311 (Sourabh)
  * sourabhraj311@gmail.com
- * 
- * This is for styling individual cells of seats in rows, and color them based upon its booking state
+ *
+ * Styles individual seats and colours them by booking state.
  */
-.seat-square {
-  height: 40px;
-  width: 40px;
-  border: 1px solid rgb(197, 197, 197);
-  border-radius: 5px;
-  margin-left: 5px;
+:host {
+  display: block;
+  transform-style: preserve-3d;
+}
+.row {
+  transform-style: preserve-3d;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  gap: 10px;
+}
+.row-label {
+  flex: none;
+  width: 18px;
+  text-align: right;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--tertiary);
+  font-variant-numeric: tabular-nums;
+}
+.seats {
+  flex: 1;
+  display: grid;
+  transform-style: preserve-3d;
+  grid-template-columns: repeat(var(--cols), minmax(0, var(--size, 48px)));
   justify-content: center;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  font-size: small;
-  text-align: center;
-  margin-top: 12px;
+  gap: 8px;
 }
-.horizontal-flex {
-  display: flex;
-  justify-content: center;
-  margin-right: 10px !important;
+.seat {
+  aspect-ratio: 40 / 44;
+  user-select: none;
+  --s-stroke: #2fb457;
+  --s-num: var(--free-num);
+  --z: 10px;
+  transform: translateZ(var(--z));
+  filter: drop-shadow(0 6px 5px rgba(52, 199, 89, 0.28));
+  transition: transform 0.25s var(--ease), filter 0.25s var(--ease);
 }
-.red {
-  background-color: #f36157;
-  color: #ffffff;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+.seat:hover {
+  --z: 26px;
+  transform: translateZ(var(--z)) rotateX(-10deg) scale(1.08);
 }
-.red::after {
-  content: "";
+.seat svg {
+  display: block;
   width: 100%;
-  height: 8px;
-  margin-top: auto;
-  border-radius: 0px;
-  background-color: #ba000d;
+  height: 100%;
+  overflow: visible;
 }
-.white {
-  background-color: white;
-  color: black;
+.seat rect {
+  fill: url(#gFree);
+  stroke: var(--s-stroke);
+  stroke-width: 1.6;
 }
-.white::after {
-  content: "";
-  width: 100%;
-  height: 8px;
-  margin-top: auto;
-  border-radius: 0px;
-  background-color: #535353;
+.seat .ext {
+  stroke: none;
+  filter: brightness(0.5);
+}
+.seat .base {
+  filter: brightness(0.92);
+}
+.seat text {
+  fill: var(--s-num);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+/* Booked: solid black */
+.seat.booked {
+  --s-stroke: var(--booked-edge);
+  --s-num: rgba(255, 255, 255, 0.85);
+  --z: 2px;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4));
+}
+.seat.booked:hover {
+  --z: 2px;
+  transform: translateZ(2px);
+}
+.seat.booked .ext {
+  filter: brightness(0.35);
+}
+.seat.booked rect {
+  fill: url(#gTaken);
+}
+.seat.mine {
+  --s-stroke: #4a48c9;
+  --s-num: #fff;
+  --z: 20px;
+  filter: drop-shadow(0 8px 8px rgba(94, 92, 230, 0.55));
+  animation: flip 0.8s var(--ease);
+}
+.seat.mine rect {
+  fill: url(#gMine);
+}
+@keyframes flip {
+  0% { transform: translateZ(0) rotateY(180deg) scale(0.6); opacity: 0; }
+  60% { transform: translateZ(34px) rotateY(-12deg) scale(1.14); opacity: 1; }
+  100% { transform: translateZ(var(--z)) rotateY(0) scale(1); }
+}
+
+/* Up next: the seats the next booking would get shake gently, harder while the Book button is hovered */
+.seat.preview {
+  --s-stroke: #1fa24a;
+  --z: 18px;
+  filter: drop-shadow(0 6px 7px rgba(52, 199, 89, 0.85));
+  animation: nudge 2.4s var(--ease) infinite;
+  animation-delay: calc(var(--d, 0) * 1ms);
+}
+.seat.preview.hot {
+  animation: shake 0.42s linear infinite;
+}
+@keyframes nudge {
+  0%, 70%, 100% { transform: translateZ(var(--z)) rotate(0); }
+  76% { transform: translateZ(calc(var(--z) + 12px)) rotate(-5deg); }
+  82% { transform: translateZ(calc(var(--z) + 6px)) rotate(5deg); }
+  88% { transform: translateZ(calc(var(--z) + 9px)) rotate(-3deg); }
+  94% { transform: translateZ(var(--z)) rotate(2deg); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateZ(var(--z)) translate(0, 0) rotate(0); }
+  20% { transform: translateZ(calc(var(--z) + 8px)) translate(-2px, -2px) rotate(-6deg); }
+  40% { transform: translateZ(var(--z)) translate(2px, 0) rotate(5deg); }
+  60% { transform: translateZ(calc(var(--z) + 8px)) translate(-2px, 1px) rotate(-4deg); }
+  80% { transform: translateZ(var(--z)) translate(2px, -2px) rotate(6deg); }
 }

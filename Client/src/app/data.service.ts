@@ -1,125 +1,160 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import Seat from './Seat';
-import Train from "./Train";
-import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs";
-import Coach from "./Coach";
+import Train from './Train';
+import Coach from './Coach';
 
+export interface Explain {
+  strategy: 'adjacent-exact' | 'adjacent-fit' | 'same-row-gaps' | 'multi-row';
+  title: string;
+  summary: string;
+  steps: string[];
+  seats: string;
+  metrics: {
+    timeMs: number;
+    rowsInspected: number;
+    runsInspected: number;
+    windowsEvaluated: number;
+    seatsIndexed: number;
+    bruteForceCombinations: number;
+    timeComplexity: string;
+    spaceComplexity: string;
+  };
+}
 
-@Injectable({
-  providedIn: 'root',
-})
+export interface BookingResponse {
+  coach: Coach;
+  bookedSeat: Seat[];
+  explain?: Explain | null;
+}
+
+export interface Toast {
+  id: number;
+  kind: 'error' | 'success' | 'info';
+  text: string;
+}
+
+export interface AppState {
+  trains: Train[];
+  coaches: Coach[];
+  selectedTrain: number | null;
+  coach: Coach | null;
+  mat: Seat[][];
+  bookedSeats: Seat[];
+  available: number;
+  trainsLoading: boolean;
+  coachesLoading: boolean;
+  mapLoading: boolean;
+  busy: boolean;
+  loadError: string | null;
+  lastMs: number | null;
+  explain: Explain | null;
+  explainOpen: boolean;
+  preview: number[];
+  previewHot: boolean;
+}
 
 /***
  * Created by Srvraj311 (Sourabh)
  * sourabhraj311@gmail.com
  *
- * This service stores the Matrix of Seats and provides them to components when needed,
- * Two methods to update the matrix and booked seats so that all receiving components will update in realtime
+ * DataService
+ * Holds the whole UI state (trains, coaches, seat matrix, loading flags, toasts) in one
+ * observable so every component updates in realtime, and wraps the REST calls to the backend.
  */
+@Injectable({
+  providedIn: 'root',
+})
 export class DataService {
-  private _url: string = ""
-  constructor(private http : HttpClient) {
-  }
-  private coach!:Coach;
-  private mat = new BehaviorSubject<Seat[][]>([]);
-  private bookedSeat = new BehaviorSubject<Seat[]>([]);
-  private availableSeats = new BehaviorSubject<number>(0);
-  getMat = this.mat.asObservable();
-  getBookedSeat = this.bookedSeat.asObservable();
-  getAvailableSeat = this.availableSeats.asObservable();
-  spinnerVisible = new BehaviorSubject<boolean>(true);
-  
+  private _url = '';
+  private toastId = 0;
 
-  setSpinnerVisible(b:boolean){
-    this.spinnerVisible.next(b);
+  private readonly _state = new BehaviorSubject<AppState>({
+    trains: [],
+    coaches: [],
+    selectedTrain: null,
+    coach: null,
+    mat: [],
+    bookedSeats: [],
+    available: 0,
+    trainsLoading: true,
+    coachesLoading: false,
+    mapLoading: false,
+    busy: false,
+    loadError: null,
+    lastMs: null,
+    explain: null,
+    explainOpen: false,
+    preview: [],
+    previewHot: false,
+  });
+  readonly state$ = this._state.asObservable();
+
+  private readonly _toasts = new BehaviorSubject<Toast[]>([]);
+  readonly toasts$ = this._toasts.asObservable();
+
+  constructor(private http: HttpClient) {}
+
+  get state(): AppState {
+    return this._state.value;
   }
 
-  getSpinnerVisible(){
-    return this.spinnerVisible.asObservable();
+  patch(p: Partial<AppState>) {
+    this._state.next({ ...this._state.value, ...p });
   }
 
+  toast(kind: Toast['kind'], text: string) {
+    const t: Toast = { id: ++this.toastId, kind, text };
+    this._toasts.next([...this._toasts.value, t].slice(-3));
+    setTimeout(() => this.dismissToast(t.id), 4500);
+  }
 
-  changeMat(mat: Seat[][]) {
-    this.mat.next(mat);
-    this.coach.bookingState = this.convertMatrixToBinary(mat);
+  dismissToast(id: number) {
+    this._toasts.next(this._toasts.value.filter((t) => t.id !== id));
   }
-  updateBookedSeat(seat: Seat[]) {
-    this.bookedSeat.next(seat);
-  }
-  updateAvailableSeats(n?: number) {
-    if(n == 0 || n)
-    this.availableSeats.next(n);
-    else {
-      this.availableSeats.next(this.coach.availableSeats);
+
+  errorMessage(e: unknown): string {
+    if (e instanceof HttpErrorResponse) {
+      if (e.status === 0) return 'Cannot reach the server. Check your connection and try again.';
+      if (e.error && typeof e.error.error === 'string') return e.error.error;
     }
-      this.coach.availableSeats = this.availableSeats.value;
+    return 'Something went wrong. Please try again.';
   }
 
-  getTrains():Observable<Train[]>{
-    const url = `${this._url}/trains`
-    return this.http.get<Train[]>(url)
-  }
-  getCoaches(train_no:number):Observable<Coach[]>{
-    const url = `${this._url}/coach/${train_no}`;
-    return this.http.get<Coach[]>(url);
+  getTrains(): Observable<Train[]> {
+    return this.http.get<Train[]>(`${this._url}/trains`);
   }
 
-  setCoach(coach : Coach){
-    this.coach = coach;
-    this.updateAvailableSeats(this.coach.availableSeats);
-    this.updateBookedSeat([]);
-    if(coach.bookingState.length <= 1)
-      this.resetMatrix().subscribe((res) => {
-        this.changeMat(this.convertBinaryToMatrix(res.coach))
-      })
-    else
-      this.mat.next(this.convertBinaryToMatrix(coach.bookingState));
+  getCoaches(train_no: number): Observable<Coach[]> {
+    return this.http.get<Coach[]>(`${this._url}/coach/${train_no}`);
   }
-  resetMatrix(){
-    const cid = this.coach.coach_id;
-    const url = `${this._url}/booking/clear/${cid}`
-    return this.http.get<any>(url);
+
+  getPreview(coachId: number, n: number) {
+    return this.http.get<{ seats: number[]; strategy: string }>(`${this._url}/booking/preview/${coachId}/${n}`);
   }
-  generateRandom(){
-    const cid = this.coach.coach_id;
-    const url = `${this._url}/booking/random/${cid}`
-    return this.http.get<any>(url);
+
+  resetMatrix(coachId: number) {
+    return this.http.get<BookingResponse>(`${this._url}/booking/clear/${coachId}`);
   }
-  convertBinaryToMatrix(mat : number[][]):Seat[][]{
-    let outMat = [];
+
+  generateRandom(coachId: number) {
+    return this.http.get<BookingResponse>(`${this._url}/booking/random/${coachId}`);
+  }
+
+  makeBookRequest(coachId: number, n: number) {
+    return this.http.get<BookingResponse>(`${this._url}/booking/${coachId}/${n}`);
+  }
+
+  // Seat numbers are 1-based and continue across rows.
+  convertBinaryToMatrix(mat: number[][]): Seat[][] {
     let count = 1;
-    for(let i = 0 ; i < mat.length; i++){
-      const row:Seat[] = [];
-      for(let j = 0; j < mat[i].length; j++){
-        const seat:Seat = {
-          id : count++,
-          number : count,
-          booked : (mat[i][j] === 1)
-        }
-        row.push(seat);
-      }
-      outMat.push(row);
-    }
-    return outMat;
-  }
-  convertMatrixToBinary(mat : Seat[][]):number[][]{
-    let outMat:number[][] = [];
-    for(let i = 0 ; i < mat.length; i++){
-      const row:number[] = [];
-      for(let j = 0; j < mat[i].length; j++){
-        if(mat[i][j].booked) row.push(1);
-        else row.push(0);
-      }
-      outMat.push(row);
-    }
-    return outMat;
-  }
-
-  makeBookRequest(n: number) {
-    const cid = this.coach.coach_id;
-    const url = `${this._url}/booking/${cid}/${n}`
-    return this.http.get<any>(url)
+    return mat.map((row) =>
+      row.map((cell) => {
+        const seat: Seat = { id: count, number: count, booked: cell === 1 };
+        count++;
+        return seat;
+      })
+    );
   }
 }

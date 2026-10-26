@@ -1,96 +1,80 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {BookingService} from '../booking.service';
-import {DataService} from '../data.service';
-import Seat from '../Seat';
-import Train from "../Train";
-import Coach from "../Coach";
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { Component, OnDestroy } from '@angular/core';
+import { BookingService, MAX_SEATS } from '../booking.service';
+import { DataService } from '../data.service';
 
 /***
  * Created by Srvraj311 (Sourabh)
  * sourabhraj311@gmail.com
  *
  * BOOKING COMPONENT
- * the following component is responsible for all the booking functionalities
- * Most of the function calls initiate from this class
+ * Train / coach pickers, the seat-count control and the booking actions.
+ * Most of the user actions start here and are handled by BookingService.
  */
 @Component({
   selector: 'app-booking',
   templateUrl: './booking.component.html',
   styleUrls: ['./booking.component.css'],
 })
-export class BookingComponent implements OnInit {
-  // variable to take input from user, number of seats user wants to book
-  noOfSeats!: number;
-  availableSeats!: number;
-  bookedSeat: Seat[] = [];
-  timeTakenToBook = '0';
-  trainArr!: Train[];
-  selectedTrain!: number;
-  coachArr!: Coach[];
-  selectedCoach!: number;
-  
-  // Injecting Booking Service : Responsible for booking
-  // DataService : Responsible for live changes to be updated on screen
+export class BookingComponent implements OnDestroy {
+  state$ = this.dataService.state$;
+  options = Array.from({ length: MAX_SEATS }, (_, i) => i + 1);
+  noOfSeats = 2;
+  confirmReset = false;
+  skeletons = [1, 2, 3];
+  private resetTimer?: ReturnType<typeof setTimeout>;
+
   constructor(
     private bookingService: BookingService,
-    private dataService: DataService,
-  ) {
+    private dataService: DataService
+  ) {}
+
+  ngOnDestroy() {
+    this.bookingService.setPreviewHot(false);
+    clearTimeout(this.resetTimer);
   }
 
-  ngOnInit(): void {
-    this.dataService.setSpinnerVisible(true);
-    this.dataService.getTrains().subscribe((trains) => { this.trainArr = trains; this.dataService.setSpinnerVisible(false); });
-    this.dataService.getAvailableSeat.subscribe((a) => { this.availableSeats = a; this.dataService.setSpinnerVisible(false); });
+  setCount(n: number) {
+    this.noOfSeats = n;
+    this.bookingService.setCount(n);
   }
 
-  isAvailable() {
-    return this.availableSeats === 0;
+  hot(on: boolean) {
+    this.bookingService.setPreviewHot(on);
   }
 
-  clearSeats() {
-    this.bookingService.resetMatrix();
-    this.bookedSeat = [];
-  }
-
-  // perform Booking operation with user input value.
   book() {
-    this.dataService.setSpinnerVisible(true);
-    const start = performance.now(); // For time calculation of algorithm
-    let end;
-    if (this.noOfSeats <= 7 && this.noOfSeats >= 1) {
-      this.bookingService.bookSeat(this.noOfSeats);
-      end = performance.now(); // For time calculation of algorithm
-      this.dataService.getBookedSeat.subscribe((newBookedSeats) => {
-        this.bookedSeat = newBookedSeats;
-        this.dataService.setSpinnerVisible(false);
-      });
-      const timeTaken = end - start;
-      this.timeTakenToBook = (Math.round(timeTaken * 10000) / 10000).toFixed(4);
-    } else alert('Only 1-7 Seats are allowed to book');
+    this.bookingService.book(this.noOfSeats);
   }
 
-  // Fill the UI with Random state of booking
   generateRandom() {
     this.bookingService.generateSeatsRandom();
-    this.dataService.getAvailableSeat.subscribe((s) => this.availableSeats = s);
   }
 
-  selectTrain(train_num: number) {
-    this.selectedTrain = train_num;
-    this.dataService.getCoaches(train_num).subscribe((coach) => this.coachArr = coach);
-    // this.selectedCoach = -1;
-  }
-
-  selectCoach(coach_id: number) {
-    // UI
-    this.selectedCoach = coach_id;
-    // Network
-    for (let c of this.coachArr) {
-      if (c.coach_id == coach_id) {
-        this.dataService.setCoach(c);
-        return;
-      }
+  // Resetting wipes every booking, so it takes a second tap to confirm.
+  clearSeats() {
+    if (!this.confirmReset) {
+      this.confirmReset = true;
+      this.resetTimer = setTimeout(() => (this.confirmReset = false), 3500);
+      return;
     }
+    clearTimeout(this.resetTimer);
+    this.confirmReset = false;
+    this.bookingService.resetMatrix();
+  }
+
+  selectTrain(no: number, current: number | null) {
+    if (no !== current) this.bookingService.selectTrain(no);
+  }
+
+  selectCoach(id: number, current: number | undefined) {
+    if (id !== current) this.bookingService.selectCoach(id);
+  }
+
+  showWhy() {
+    this.bookingService.toggleExplain(true);
+  }
+
+  retry() {
+    this.bookingService.loadTrains();
   }
 }
