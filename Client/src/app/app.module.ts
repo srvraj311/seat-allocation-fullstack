@@ -5,21 +5,14 @@ import { SeatComponent } from './seat/seat.component';
 import { SeatItemComponent } from './seat-item/seat-item.component';
 import { BookingComponent } from './booking/booking.component';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule} from "@angular/common/http";
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { MatProgressSpinnerModule  } from '@angular/material/progress-spinner'
+import { BackgroundComponent } from './background/background.component';
+import { Hero3dComponent } from './hero3d/hero3d.component';
+import { TiltDirective } from './tilt.directive';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    SeatComponent,
-    SeatItemComponent,
-    BookingComponent,
-  ],
-  imports: [BrowserModule, FormsModule , HttpClientModule, MatProgressSpinnerModule],
-  providers: [
-    provideAnimationsAsync()
-  ],
+  declarations: [AppComponent, SeatComponent, SeatItemComponent, BookingComponent, BackgroundComponent, Hero3dComponent, TiltDirective],
+  imports: [BrowserModule, FormsModule, HttpClientModule],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

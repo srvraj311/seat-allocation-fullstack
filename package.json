@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "seed": "node scripts/seed.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.6",
@@ -15,6 +16,6 @@
     "morgan": "~1.10.0"
   },
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   }
 }

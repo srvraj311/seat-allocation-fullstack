@@ -2,127 +2,241 @@
  * Created by Srvraj311 (Sourabh)
  * sourabhraj311@gmail.com
  *
- * All the user input related stylings are done here
- *
+ * All the user input related styling: pickers, segmented control and actions.
  */
-
-.title {
-  display: block;
-  text-align: center;
-  margin: 0.8rem;
-}
-.text {
-  text-align: left;
-}
-.cardify {
-  display: block;
-  padding: 0.8rem 1.3rem;
-  width: 100%;
-  background-color: #ffffff;
-  border: 1px solid #ededed;
-  color: black;
-  border-radius: 1.5rem;
-}
-
-.text.available {
-  color: black;
-}
-.text.available span {
-  float: right;
-  color: green;
-}
-.red {
-  color: red !important;
-}
-.container {
+:host {
   display: flex;
   flex-direction: column;
+  gap: 16px;
 }
-.container input[type="number"] {
-  outline: 1px solid #ededed;
-  border-radius: 1.5rem;
-  border: none;
-  padding: 0.34rem 1rem;
-  margin-top: 1rem;
+h2 {
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
-
-label span {
-  font-size: small;
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-
-.btn {
-  width: 140px;
-  height: 45px;
-  font-family: "Roboto", sans-serif;
-  font-size: 11px;
+.label {
+  margin: 18px 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--secondary);
   text-transform: uppercase;
-  letter-spacing: 2.5px;
+  letter-spacing: 0.04em;
+}
+.label .muted {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+.muted {
+  color: var(--secondary);
+  font-size: 14px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  min-width: 56px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 980px;
+  background: var(--fill);
+  font-size: 15px;
   font-weight: 500;
-  color: #000;
-  background-color: #fff;
-  border: 1px solid lightgray;
-  border-radius: 45px;
-  /*box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);*/
-  transition: all 0.3s ease 0s;
-  cursor: pointer;
-  outline: none;
+  font-variant-numeric: tabular-nums;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.15s var(--ease);
 }
-.btn:hover {
-  background-color: var(--primary-2);
-  box-shadow: 0px 8px 20px rgba(46, 131, 229, 0.4);
+.chip:hover {
+  background: var(--fill-2);
+}
+.chip:active {
+  transform: scale(0.96);
+}
+.chip.on {
+  background: var(--accent);
   color: #fff;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--accent) 55%, #000), 0 8px 14px color-mix(in srgb, var(--accent) 35%, transparent);
+  transform: translateY(-2px);
+}
+.chip-sk {
+  width: 64px;
+  height: 38px;
+  border-radius: 980px;
 }
 
-.btn-submit {
-  place-self: center;
-  margin-top: 1.5rem;
+.seg {
+  display: flex;
+  padding: 3px;
+  border-radius: 12px;
+  background: var(--fill);
 }
-.optional {
+.seg-item {
+  flex: 1;
+  height: 40px;
+  border-radius: 9px;
+  font-size: 16px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--secondary);
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+.seg-item.on {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.85);
+  color: #1d1d1f;
+  font-weight: 600;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.14), 0 6px 10px rgba(0, 0, 0, 0.12);
+}
+.seg-item:disabled {
+  cursor: default;
+}
+
+.book {
+  width: 100%;
+  margin-top: 18px;
+  min-height: 50px;
+  font-size: 17px;
+}
+
+.avail {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--green);
+  background: color-mix(in srgb, var(--green) 14%, transparent);
+  padding: 4px 11px;
+  border-radius: 980px;
+}
+.avail.none {
+  color: var(--red);
+  background: color-mix(in srgb, var(--red) 14%, transparent);
+}
+
+.hint {
+  margin-top: 12px;
+  font-size: 14px;
+  color: var(--secondary);
+}
+.hint.warn {
+  color: var(--red);
+}
+
+.error {
+  margin-top: 14px;
+  padding: 16px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--red) 10%, transparent);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--red);
+  font-weight: 500;
 }
-.btn-gen {
 
-  margin-top: 3rem;
+.result {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--accent-soft);
+  animation: rise 0.4s var(--ease);
+}
+.result-head svg {
+  animation: check 0.8s var(--ease);
+  filter: drop-shadow(0 3px 2px color-mix(in srgb, var(--accent) 45%, transparent));
+}
+@keyframes check {
+  from { transform: perspective(120px) rotateY(-270deg) scale(0.4); opacity: 0; }
+  to { transform: perspective(120px) rotateY(0) scale(1); opacity: 1; }
+}
+.result-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+}
+.result-head .muted {
+  margin-left: auto;
+  font-size: 13px;
+}
+.tickets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.ticket {
+  box-shadow: 0 3px 0 #3d3bb0, 0 8px 12px rgba(94, 92, 230, 0.4);
+  min-width: 42px;
+  height: 36px;
   padding: 0 12px;
-  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #5ac8fa, #5e5ce6);
+  color: #fff;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
 }
 
-.booked {
-  margin-bottom: 1rem;
-}
-
-.train{
-  display: flex;
-  flex-direction: row;
-}
-.coach{
-  width: auto;
-  display: flex;
-  flex-direction: row;
-}
-.box{
-  width: auto;
-  height: 30px;
-  min-width: 60px;
-  font-size: 0.8rem;
-  padding: 5px 10px;
-  margin: 5px 10px;
-}
-
-.selected{
-  background: var(--primary);
-  color: white;
-}
-
-.train-selector{
+.tools {
   display: flex;
   flex-direction: column;
+  gap: 10px;
 }
 
-.r{
+.why {
+  width: 100%;
+  margin-top: 14px;
+  min-height: 40px;
+  font-size: 14px;
+}
+
+/* Train and coach chips: name on top, detail below */
+.chip.two {
   display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  height: auto;
+  min-height: 46px;
+  padding: 6px 14px;
+  line-height: 1.2;
 }
-
+.chip.two b {
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.chip.two small {
+  font-size: 11px;
+  opacity: 0.7;
+}
+.chips.scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding-bottom: 6px;
+  margin: 0 -4px;
+  padding-inline: 4px;
+  scrollbar-width: thin;
+}
+.chips.scroll .chip {
+  flex: none;
+  scroll-snap-align: start;
+}
+.hint.next {
+  color: var(--green);
+  font-weight: 500;
+}

@@ -1,19 +1,96 @@
 <!--
+ Created by Srvraj311 (Sourabh)
+ sourabhraj311@gmail.com
 
-/***
- * Created by Srvraj311 (Sourabh)
- * sourabhraj311@gmail.com
- *
- * HTML for This component contains an ngFor directive that loops over the Matrix of seats fetched from booking service
- * And then renders to seat-item components
- */
+ Loops over the matrix of seats from the shared state and renders each row with app-seat-item.
+ Shows skeleton rows while loading and a friendly empty state otherwise.
+-->
+<section #card class="card map-card" *ngIf="vm$ | async as vm" aria-label="Coach seat map">
+  <header class="head">
+    <div>
+      <h2>{{ vm.coach ? 'Coach C' + vm.coach.coach_id : 'Seat map' }}</h2>
+      <p class="muted" *ngIf="vm.selectedTrain !== null">{{ vm.trainName ? vm.trainName + ' · ' : '' }}{{ vm.selectedTrain }}<ng-container *ngIf="vm.coach"> · {{ vm.coach.totalSeats }} seats, {{ vm.coach.seatsInRows }} per row</ng-container></p>
+    </div>
+    <div class="legend" *ngIf="vm.mat.length">
+      <span><i class="sw free"></i>Available</span>
+      <span><i class="sw taken"></i>Booked</span>
+      <span><i class="sw mine"></i>Yours</span>
+      <span *ngIf="vm.preview.length"><i class="sw next"></i>Up next</span>
+    </div>
+  </header>
 
- -->
-
-<div class="seat-container">
-  <div class="seats" >
-    <p class="empty" *ngIf="mat.length === 0">🚊Select Train and Coach</p>
-    <app-seat-item *ngFor="let row of mat" [seatArr]="row"></app-seat-item>
+  <div class="occupancy" *ngIf="vm.mat.length" aria-hidden="true">
+    <div class="bar"><div class="fill" [style.width.%]="vm.total ? (vm.booked / vm.total) * 100 : 0"></div></div>
+    <span class="muted">{{ vm.available }} of {{ vm.total }} seats available</span>
   </div>
 
-</div>
+  <div class="coach" appTilt [class.dim]="vm.mapLoading || vm.busy">
+    <!-- Loading -->
+    <ng-container *ngIf="!vm.mat.length && (vm.trainsLoading || vm.coachesLoading || vm.mapLoading); else loaded">
+      <div class="skeleton row-sk" *ngFor="let r of vm.skeletonRows"></div>
+    </ng-container>
+
+    <ng-template #loaded>
+      <!-- Empty states -->
+      <div class="empty" *ngIf="!vm.mat.length">
+        <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="5" y="3" width="14" height="14" rx="3" />
+          <path d="M5 11h14M9 20l-2 2M15 20l2 2" />
+        </svg>
+        <p *ngIf="vm.loadError">{{ vm.loadError }}</p>
+        <p *ngIf="!vm.loadError && !vm.trains.length">No trains available yet.</p>
+        <p *ngIf="!vm.loadError && vm.trains.length">Select a train and coach to see its seats.</p>
+      </div>
+
+      <app-seat-item
+        *ngFor="let row of vm.mat; let i = index; trackBy: trackRow"
+        [seatArr]="row"
+        [mine]="vm.mine"
+        [preview]="vm.next"
+        [hot]="vm.previewHot"
+        [rowLabel]="i + 1"
+        [cols]="vm.coach?.seatsInRows || 0"
+      ></app-seat-item>
+    </ng-template>
+  </div>
+
+  <!-- Algorithm explanation, anchored over the booked seats -->
+  <aside
+    #pop
+    class="pop"
+    *ngIf="vm.explain && vm.explainOpen"
+    [class.below]="pos?.below"
+    [style.top.px]="pos?.top"
+    [style.left.px]="pos?.left"
+    [style.--arrow.px]="pos?.arrow"
+    [style.visibility]="pos ? 'visible' : 'hidden'"
+    role="dialog"
+    aria-label="How these seats were chosen"
+  >
+    <header class="pop-head">
+      <span class="badge" [attr.data-s]="vm.explain.strategy">{{ badges[vm.explain.strategy] }}</span>
+      <button class="x" type="button" (click)="close()" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+    </header>
+    <h3>{{ vm.explain.title }}</h3>
+    <p class="sum">{{ vm.explain.summary }}</p>
+
+    <ol class="steps">
+      <li *ngFor="let st of vm.explain.steps">{{ st }}</li>
+    </ol>
+
+    <div class="stats">
+      <div><b>{{ vm.explain.metrics.timeMs | number: '1.2-3' }} ms</b><span>engine time</span></div>
+      <div><b>{{ vm.checked | number }}</b><span>checks made</span></div>
+      <div><b>{{ vm.explain.metrics.bruteForceCombinations | number }}</b><span>brute force</span></div>
+    </div>
+    <p class="vs" *ngIf="vm.ratio > 1">About <b>{{ vm.ratio | number }}x fewer</b> checks than testing every combination of {{ vm.explain.seats.split(',').length }} free seats.</p>
+
+    <div class="cx">
+      <span>Time <code>{{ vm.explain.metrics.timeComplexity }}</code></span>
+      <span>Space <code>{{ vm.explain.metrics.spaceComplexity }}</code></span>
+    </div>
+    <i class="arrow"></i>
+  </aside>
+</section>

@@ -4,3 +4,7 @@ Client/.angular
 # Client/dist
 /.env
 /.idea
+
+node_modules
+.angular
+.DS_Store

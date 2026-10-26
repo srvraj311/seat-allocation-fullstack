@@ -1,70 +1,119 @@
-<h3 class="title">🎫 Book Tickets!</h3>
-<div *ngIf="selectedCoach">
+<ng-container *ngIf="state$ | async as s">
+  <!-- Journey: train + coach -->
+  <section class="card" aria-label="Choose train and coach">
+    <h2>Your journey</h2>
 
-
-  <p class="text available cardify">
-    Available Tickets :
-    <span [ngClass]="{ red: isAvailable() }">{{ availableSeats }}</span>
-  </p>
-  <div *ngIf="bookedSeat.length > 0" class="cardify booked">
-    <p class="text avaialble">Congratulations! These seats are booked for you</p>
-    <app-seat-item [seatArr]="bookedSeat"></app-seat-item>
-  </div>
-
-  <ng-form class="container cardify" (keyup.enter)="book()">
-    <label for="noOfSeats"> No. of Seats <span>( Between 1 - 7 ) </span></label>
-    <input
-      type="number"
-      name="noOfSeats"
-      class="seat"
-      maxlength="1"
-      min="1"
-      max="7"
-
-      contenteditable="false"
-      [(ngModel)]="noOfSeats"
-    />
-    <!--  Autofocus here above-->
-    <input type="submit" class="btn btn-submit" value="Book" (click)="book()"/>
-  </ng-form>
-  <app-seat-item></app-seat-item>
-  <div class="optional">
-    <input
-      name="random"
-      type="button"
-      class="btn btn-gen"
-      (click)="generateRandom()"
-      value="Fill Coach With Random Bookings"
-    />
-    <input
-      type="button"
-      class="btn btn-submit"
-      (click)="clearSeats()"
-      value="Reset Coach"
-    />
-  </div>
-  <p class="text" style="text-align: center; margin: 15px; font-size: 0.7rem">
-    Time taken for algorithm and displaying on screen :
-    <span style="color: green">{{ timeTakenToBook }}ms</span>
-  </p>
-</div>
-<div class="train-selector cardify">
-  <div class="r">
-    <label class="">Train Number :</label>
-    <div class="train">
-      <button *ngFor="let train of trainArr" class="btn box"
-              [ngClass]="(train.train_no == selectedTrain) ? 'selected' : ''"
-              (click)="selectTrain(train.train_no)">{{train.train_no}}</button>
+    <div class="error" *ngIf="s.loadError && !s.trainsLoading">
+      <p>{{ s.loadError }}</p>
+      <button class="btn btn-secondary" (click)="retry()">Try again</button>
     </div>
-  </div>
-  <div class="r">
-    <label class="">Coach Number : </label>
-    <div class="coach">
-      <button *ngFor="let coach of coachArr" class="btn box"
-              [ngClass]="(coach.coach_id == selectedCoach) ? 'selected' : ''" (click)="selectCoach(coach.coach_id)">
-        C{{coach.coach_id}}</button>
+
+    <ng-container *ngIf="!s.loadError || s.trainsLoading">
+      <p class="label">Train</p>
+      <div class="chips" *ngIf="s.trainsLoading; else trains">
+        <span class="skeleton chip-sk" *ngFor="let i of skeletons"></span>
+      </div>
+      <ng-template #trains>
+        <div class="chips scroll" role="radiogroup" aria-label="Train">
+          <button
+            *ngFor="let t of s.trains"
+            class="chip two"
+            role="radio"
+            [class.on]="t.train_no === s.selectedTrain"
+            [attr.aria-checked]="t.train_no === s.selectedTrain"
+            (click)="selectTrain(t.train_no, s.selectedTrain)"
+          ><b>{{ t.name || t.train_no }}</b><small>{{ t.train_no }}</small></button>
+          <span class="muted" *ngIf="!s.trains.length">No trains found</span>
+        </div>
+      </ng-template>
+
+      <p class="label">Coach</p>
+      <div class="chips" *ngIf="s.coachesLoading; else coaches">
+        <span class="skeleton chip-sk" *ngFor="let i of skeletons"></span>
+      </div>
+      <ng-template #coaches>
+        <div class="chips" role="radiogroup" aria-label="Coach">
+          <button
+            *ngFor="let c of s.coaches"
+            class="chip two"
+            role="radio"
+            [class.on]="c.coach_id === s.coach?.coach_id"
+            [attr.aria-checked]="c.coach_id === s.coach?.coach_id"
+            (click)="selectCoach(c.coach_id, s.coach?.coach_id)"
+          ><b>C{{ c.coach_id }}</b><small>{{ c.totalSeats }} seats</small></button>
+          <span class="muted" *ngIf="!s.coaches.length">{{ s.selectedTrain === null ? 'Pick a train first' : 'No coaches on this train' }}</span>
+        </div>
+      </ng-template>
+    </ng-container>
+  </section>
+
+  <!-- Booking -->
+  <section class="card" aria-label="Book seats">
+    <div class="title-row">
+      <h2>Book seats</h2>
+      <span class="avail" *ngIf="s.coach" [class.none]="s.available === 0">
+        {{ s.available === 0 ? 'Coach full' : s.available + ' available' }}
+      </span>
     </div>
-  </div>
 
-</div>
+    <div *ngIf="!s.coach" class="hint">Select a coach to start booking.</div>
 
+    <form *ngIf="s.coach" (ngSubmit)="book()">
+      <p class="label">How many seats? <span class="muted">Up to {{ options.length }} at a time</span></p>
+      <div class="seg" role="radiogroup" aria-label="Number of seats">
+        <button
+          type="button"
+          *ngFor="let n of options"
+          class="seg-item"
+          role="radio"
+          [class.on]="n === noOfSeats"
+          [attr.aria-checked]="n === noOfSeats"
+          [disabled]="s.busy"
+          (click)="setCount(n)"
+        >{{ n }}</button>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary book"
+        (mouseenter)="hot(true)"
+        (mouseleave)="hot(false)"
+        (focus)="hot(true)"
+        (blur)="hot(false)"
+        [disabled]="s.busy || s.mapLoading || s.available < noOfSeats"
+      >
+        <span class="spinner" *ngIf="s.busy"></span>
+        {{ s.busy ? 'Booking…' : 'Book ' + noOfSeats + (noOfSeats === 1 ? ' seat' : ' seats') }}
+      </button>
+      <p class="hint next" *ngIf="s.preview.length">
+        Up next: seat{{ s.preview.length > 1 ? 's' : '' }} {{ s.preview.join(', ') }}
+      </p>
+      <p class="hint warn" *ngIf="s.available > 0 && s.available < noOfSeats">
+        Only {{ s.available }} seat{{ s.available === 1 ? '' : 's' }} left. Choose fewer seats.
+      </p>
+      <p class="hint warn" *ngIf="s.available === 0">This coach is full. Reset it or pick another coach.</p>
+    </form>
+
+    <div class="result" *ngIf="s.coach && s.bookedSeats.length">
+      <div class="result-head">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M7.5 12.5l3 3 6-6.5" /></svg>
+        <strong>Seats confirmed</strong>
+        <span class="muted" *ngIf="s.lastMs !== null">{{ s.lastMs | number: '1.0-0' }} ms</span>
+      </div>
+      <div class="tickets">
+        <span class="ticket" *ngFor="let b of s.bookedSeats">{{ b.number }}</span>
+      </div>
+      <button type="button" class="btn btn-secondary why" *ngIf="s.explain" (click)="showWhy()">
+        How were these seats chosen?
+      </button>
+    </div>
+  </section>
+
+  <!-- Utilities -->
+  <section class="card tools" *ngIf="s.coach" aria-label="Coach tools">
+    <button class="btn btn-secondary" (click)="generateRandom()" [disabled]="s.busy || s.mapLoading">Fill with sample bookings</button>
+    <button class="btn btn-secondary btn-danger" (click)="clearSeats()" [disabled]="s.busy || s.mapLoading">
+      {{ confirmReset ? 'Tap again to confirm' : 'Reset coach' }}
+    </button>
+  </section>
+</ng-container>
